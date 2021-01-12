@@ -34,6 +34,7 @@ signed main() {
   #endif
   ios_base::sync_with_stdio(false); 
   cin.tie(nullptr); 
+  cout.precision(17);
 
   
   return 0;
