@@ -1580,6 +1580,15 @@ void chmax(T &x, T y) {x = max(x,y);}
 template<typename T>
 void chmin(T &x, T y) {x = min(x,y);}
 
+template<typename T>
+void asort(vector<T> &a) {sort(a.begin(), a.end());}
+
+template<typename T>
+void dsort(vector<T> &a) {sort(a.rbegin(), a.rend());}
+
+template<typename T>
+void reverse(vector<T> &a) {reverse(a.begin(), a.end());}
+
 int ccw(pii p1, pii p2, pii p3) {
     auto [x1,y1] = p1;
     auto [x2,y2] = p2;
@@ -1942,7 +1951,7 @@ signed main() {
     mint::set_mod(998244353);
     // mint::set_mod(1e9+7);
     int tc = 1;
-    // ri(tc);
+    ri(tc);
     for (int i=1; i<=tc; i++) {
         // cout << "Case #" << i << ": ";
         solve();
