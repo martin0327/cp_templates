@@ -1937,12 +1937,11 @@ void io_util() {
     freopen("input.txt", "r", stdin);
     // freopen("output.txt", "w", stdout);
     #endif
-    ios_base::sync_with_stdio(false); 
-    cin.tie(nullptr); 
+    cin.tie(0)->sync_with_stdio(0);
     cout.precision(17);
 }
 
-////////////////////////////////////////
+////////////////////////////////////
 
 void solve(); 
 signed main() {
