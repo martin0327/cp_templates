@@ -1322,9 +1322,8 @@ struct two_sat {
 
 using namespace atcoder;
 
-#pragma GCC optimize ("O2")
-#pragma GCC optimize("unroll-loops")
-#pragma GCC target ("avx2")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 #include <bits/stdc++.h>
 // #define endl "\n"
 #define int long long
@@ -1951,7 +1950,7 @@ signed main() {
     mint::set_mod(998244353);
     // mint::set_mod(1e9+7);
     int tc = 1;
-    ri(tc);
+    // ri(tc);
     for (int i=1; i<=tc; i++) {
         // cout << "Case #" << i << ": ";
         solve();
