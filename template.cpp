@@ -1711,6 +1711,13 @@ set<T> get_set(vector<T> &a) {
     return ret;
 }
 
+template<typename T>
+vector<T> get_unique(vector<T> a) {
+    asort(a);
+    a.erase(unique(a.begin(), a.end()), a.end());
+    return ret;
+}
+
 ////////////////////////////////////
  
 vector<mint> fact;
