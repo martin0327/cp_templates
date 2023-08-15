@@ -1715,7 +1715,7 @@ template<typename T>
 vector<T> get_unique(vector<T> a) {
     asort(a);
     a.erase(unique(a.begin(), a.end()), a.end());
-    return ret;
+    return a;
 }
 
 ////////////////////////////////////
