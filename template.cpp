@@ -1731,7 +1731,7 @@ void init_fact(int fact_sz, int finv_sz) {
         fact[i] = fact[i-1] * i;
     }
     finv[finv_sz] = fact[finv_sz].inv();
-    for (int i=finv_sz; i>=0; i--) {
+    for (int i=finv_sz; i>0; i--) {
         finv[i-1] = finv[i] * i;
     }
 }
