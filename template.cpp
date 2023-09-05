@@ -1438,19 +1438,15 @@ void po(T x, Args... args) {
 }
 template<typename T>
 void po(vector<T> &a) {
-    for (int i=0; i<(int)a.size(); i++) {
-        if (i <(int)a.size()-1) {
-            cout << a[i] << " ";
-        }
-        else cout << a[i] << "\n";
+    int sz = a.size();
+    for (int i=0; i<sz; i++) {
+        cout << a[i] << ((i==sz-1)?"\n":" ");
     }
 }
 void po(vector<mint> &a) {
-    for (int i=0; i<(int)a.size(); i++) {
-        if (i <(int)a.size()-1) {
-            cout << a[i].val() << " ";
-        }
-        else cout << a[i].val() << "\n";
+    int sz = a.size();
+    for (int i=0; i<sz; i++) {
+        cout << a[i].val() << ((i==sz-1)?"\n":" ");
     }
 }
 
