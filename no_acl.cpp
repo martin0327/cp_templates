@@ -515,6 +515,8 @@ using vs = vector<string>;
 using vvs = vector<vs>;
 using ti3 = tuple<int,int,int>;
 using vti3 = vector<ti3>;
+using ti4 = tuple<int,int,int,int>;
+using vti4 = vector<ti4>;
 
 int ceil_pow2(int n) {
     int x = 0;
@@ -582,8 +584,8 @@ long long inv_mod(long long x, long long m) {
     return z.second;
 }
 
-std::pair<long long, long long> crt(const std::vector<long long>& r,
-                                    const std::vector<long long>& m) {
+pair<long long, long long> crt(const vector<long long>& r,
+                                    const vector<long long>& m) {
     assert(r.size() == m.size());
     int n = r.size();
     long long r0 = 0, m0 = 1;
@@ -879,7 +881,7 @@ struct dsu {
         assert(0 <= b && b < _n);
         int x = leader(a), y = leader(b);
         if (x == y) return x;
-        if (-parent_or_size[x] < -parent_or_size[y]) std::swap(x, y);
+        if (-parent_or_size[x] < -parent_or_size[y]) swap(x, y);
         parent_or_size[x] += parent_or_size[y];
         parent_or_size[y] = x;
         return x;
@@ -902,13 +904,13 @@ struct dsu {
         return -parent_or_size[leader(a)];
     }
 
-    std::vector<std::vector<int>> groups() {
-        std::vector<int> leader_buf(_n), group_size(_n);
+    vector<vector<int>> groups() {
+        vector<int> leader_buf(_n), group_size(_n);
         for (int i = 0; i < _n; i++) {
             leader_buf[i] = leader(i);
             group_size[leader_buf[i]]++;
         }
-        std::vector<std::vector<int>> result(_n);
+        vector<vector<int>> result(_n);
         for (int i = 0; i < _n; i++) {
             result[i].reserve(group_size[i]);
         }
@@ -916,15 +918,15 @@ struct dsu {
             result[leader_buf[i]].push_back(i);
         }
         result.erase(
-            std::remove_if(result.begin(), result.end(),
-                [&](const std::vector<int>& v) { return v.empty(); }),
+            remove_if(result.begin(), result.end(),
+                [&](const vector<int>& v) { return v.empty(); }),
             result.end());
         return result;
     }
 
   private:
     int _n;
-    std::vector<int> parent_or_size;
+    vector<int> parent_or_size;
 };
 
 class Trie {
@@ -1182,11 +1184,11 @@ template <class T> struct fenwick_tree {
 template <class S, S (*op)(S, S), S (*e)()> struct segtree {
   public:
     segtree() : segtree(0) {}
-    explicit segtree(int n) : segtree(std::vector<S>(n, e())) {}
-    explicit segtree(const std::vector<S>& v) : _n((int)v.size()) {
+    explicit segtree(int n) : segtree(vector<S>(n, e())) {}
+    explicit segtree(const vector<S>& v) : _n((int)v.size()) {
         log = ceil_pow2(_n);
         size = 1 << log;
-        d = std::vector<S>(2 * size, e());
+        d = vector<S>(2 * size, e());
         for (int i = 0; i < _n; i++) d[size + i] = v[i];
         for (int i = size - 1; i >= 1; i--) {
             update(i);
@@ -1278,7 +1280,7 @@ template <class S, S (*op)(S, S), S (*e)()> struct segtree {
 
   private:
     int _n, size, log;
-    std::vector<S> d;
+    vector<S> d;
 
     void update(int k) { d[k] = op(d[2 * k], d[2 * k + 1]); }
 };
@@ -1293,12 +1295,12 @@ template <class S,
 struct lazy_segtree {
   public:
     lazy_segtree() : lazy_segtree(0) {}
-    explicit lazy_segtree(int n) : lazy_segtree(std::vector<S>(n, e())) {}
-    explicit lazy_segtree(const std::vector<S>& v) : _n((int)(v.size())) {
+    explicit lazy_segtree(int n) : lazy_segtree(vector<S>(n, e())) {}
+    explicit lazy_segtree(const vector<S>& v) : _n((int)(v.size())) {
         log = ceil_pow2(_n);
         size = 1 << log;
-        d = std::vector<S>(2 * size, e());
-        lz = std::vector<F>(size, id());
+        d = vector<S>(2 * size, e());
+        lz = vector<F>(size, id());
         for (int i = 0; i < _n; i++) d[size + i] = v[i];
         for (int i = size - 1; i >= 1; i--) {
             update(i);
@@ -1442,8 +1444,8 @@ struct lazy_segtree {
 
   private:
     int _n, size, log;
-    std::vector<S> d;
-    std::vector<F> lz;
+    vector<S> d;
+    vector<F> lz;
 
     void update(int k) { d[k] = op(d[2 * k], d[2 * k + 1]); }
     void all_apply(int k, F f) {
@@ -1457,14 +1459,14 @@ struct lazy_segtree {
     }
 };
 
-template <class T> std::vector<int> z_algorithm(const std::vector<T>& s) {
+template <class T> vector<int> z_algorithm(const vector<T>& s) {
     int n = (int)(s.size());
     if (n == 0) return {};
-    std::vector<int> z(n);
+    vector<int> z(n);
     z[0] = 0;
     for (int i = 1, j = 0; i < n; i++) {
         int& k = z[i];
-        k = (j + z[j] <= i) ? 0 : std::min(j + z[j] - i, z[i - j]);
+        k = (j + z[j] <= i) ? 0 : min(j + z[j] - i, z[i - j]);
         while (i + k < n && s[k] == s[i + k]) k++;
         if (j + z[j] < i + z[i]) j = i;
     }
@@ -1472,9 +1474,9 @@ template <class T> std::vector<int> z_algorithm(const std::vector<T>& s) {
     return z;
 }
 
-std::vector<int> z_algorithm(const std::string& s) {
+vector<int> z_algorithm(const string& s) {
     int n = s.size();
-    std::vector<int> s2(n);
+    vector<int> s2(n);
     for (int i = 0; i < n; i++) {
         s2[i] = s[i];
     }
