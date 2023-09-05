@@ -497,7 +497,7 @@ using namespace atcoder;
 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 #include <bits/stdc++.h>
 // #define endl "\n"
-#define int long long
+#define int long long 
 #define PI 3.14159265359
 
 using namespace std;
@@ -686,19 +686,15 @@ void po(T x, Args... args) {
 }
 template<typename T>
 void po(vector<T> &a) {
-    for (int i=0; i<(int)a.size(); i++) {
-        if (i <(int)a.size()-1) {
-            cout << a[i] << " ";
-        }
-        else cout << a[i] << "\n";
+    int sz = a.size();
+    for (int i=0; i<sz; i++) {
+        cout << a[i] << " \n"[i+1==sz];
     }
 }
 void po(vector<mint> &a) {
-    for (int i=0; i<(int)a.size(); i++) {
-        if (i <(int)a.size()-1) {
-            cout << a[i].val() << " ";
-        }
-        else cout << a[i].val() << "\n";
+    int sz = a.size();
+    for (int i=0; i<sz; i++) {
+        cout << a[i].val() << " \n"[i+1==sz];
     }
 }
 
@@ -767,8 +763,6 @@ int cnt_gt_x(vi &a, int x) {
 int cnt_gt_x(vi &a, int x, int lo, int hi) {
     return a.begin()+hi - upper_bound(a.begin()+lo, a.begin()+hi, x);
 }
-
-
 
 bool mul_overflow(int a, int b) {
     int c;
@@ -848,7 +842,7 @@ template<typename T>
 vector<T> get_unique(vector<T> a) {
     asort(a);
     a.erase(unique(a.begin(), a.end()), a.end());
-    return ret;
+    return a;
 }
 
 int ccw(pii p1, pii p2, pii p3) {
@@ -981,7 +975,7 @@ void init_fact(int fact_sz, int finv_sz) {
         fact[i] = fact[i-1] * i;
     }
     finv[finv_sz] = fact[finv_sz].inv();
-    for (int i=finv_sz; i>=0; i--) {
+    for (int i=finv_sz; i>0; i--) {
         finv[i-1] = finv[i] * i;
     }
 }
@@ -1189,8 +1183,8 @@ template <class S, S (*op)(S, S), S (*e)()> struct segtree {
   public:
     segtree() : segtree(0) {}
     explicit segtree(int n) : segtree(std::vector<S>(n, e())) {}
-    explicit segtree(const std::vector<S>& v) : _n(int(v.size())) {
-        log = internal::ceil_pow2(_n);
+    explicit segtree(const std::vector<S>& v) : _n((int)v.size()) {
+        log = ceil_pow2(_n);
         size = 1 << log;
         d = std::vector<S>(2 * size, e());
         for (int i = 0; i < _n; i++) d[size + i] = v[i];
@@ -1300,8 +1294,8 @@ struct lazy_segtree {
   public:
     lazy_segtree() : lazy_segtree(0) {}
     explicit lazy_segtree(int n) : lazy_segtree(std::vector<S>(n, e())) {}
-    explicit lazy_segtree(const std::vector<S>& v) : _n(int(v.size())) {
-        log = internal::ceil_pow2(_n);
+    explicit lazy_segtree(const std::vector<S>& v) : _n((int)(v.size())) {
+        log = ceil_pow2(_n);
         size = 1 << log;
         d = std::vector<S>(2 * size, e());
         lz = std::vector<F>(size, id());
@@ -1464,7 +1458,7 @@ struct lazy_segtree {
 };
 
 template <class T> std::vector<int> z_algorithm(const std::vector<T>& s) {
-    int n = int(s.size());
+    int n = (int)(s.size());
     if (n == 0) return {};
     std::vector<int> z(n);
     z[0] = 0;
