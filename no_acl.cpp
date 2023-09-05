@@ -1149,7 +1149,7 @@ struct LCA {
 };
 
 template <class T> struct fenwick_tree {
-    int _n;
+    int n;
     vector<T> d;
 
     fenwick_tree(int n) {
