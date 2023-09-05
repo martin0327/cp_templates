@@ -690,13 +690,13 @@ template<typename T>
 void po(vector<T> &a) {
     int sz = a.size();
     for (int i=0; i<sz; i++) {
-        cout << a[i] << " \n"[i+1==sz];
+        cout << a[i] << ((i==sz-1)?"\n":" ");
     }
 }
 void po(vector<mint> &a) {
     int sz = a.size();
     for (int i=0; i<sz; i++) {
-        cout << a[i].val() << " \n"[i+1==sz];
+        cout << a[i].val() << ((i==sz-1)?"\n":" ");
     }
 }
 
