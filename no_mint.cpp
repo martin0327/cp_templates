@@ -6,56 +6,11 @@
 #define PI 3.14159265359
 using namespace std;
 
-constexpr int bsf_constexpr(unsigned int n) {
-    int x = 0;
-    while (!(n & (1 << x))) x++;
-    return x;
-}
-
-int bsf(unsigned int n) {
-    return __builtin_ctz(n);
-}
-
 constexpr long long safe_mod(long long x, long long m) {
     x %= m;
     if (x < 0) x += m;
     return x;
 }
-
-constexpr long long pow_mod_constexpr(long long x, long long n, int m) {
-    if (m == 1) return 0;
-    unsigned int _m = (unsigned int)(m);
-    unsigned long long r = 1;
-    unsigned long long y = safe_mod(x, m);
-    while (n) {
-        if (n & 1) r = (r * y) % _m;
-        y = (y * y) % _m;
-        n >>= 1;
-    }
-    return r;
-}
-
-constexpr bool is_prime_constexpr(int n) {
-    if (n <= 1) return false;
-    if (n == 2 || n == 7 || n == 61) return true;
-    if (n % 2 == 0) return false;
-    long long d = n - 1;
-    while (d % 2 == 0) d /= 2;
-    constexpr long long bases[3] = {2, 7, 61};
-    for (long long a : bases) {
-        long long t = d;
-        long long y = pow_mod_constexpr(a, t, n);
-        while (t != n - 1 && y != 1 && y != n - 1) {
-            y = y * y % n;
-            t <<= 1;
-        }
-        if (y != n - 1 && t % 2 == 0) {
-            return false;
-        }
-    }
-    return true;
-}
-template <int n> constexpr bool is_prime = is_prime_constexpr(n);
 
 pair<long long, long long> inv_gcd(long long a, long long b) {
     a = safe_mod(a, b);
@@ -67,7 +22,7 @@ pair<long long, long long> inv_gcd(long long a, long long b) {
     while (t) {
         long long u = s / t;
         s -= t * u;
-        m0 -= m1 * u;  // |m1 * u| <= |m1| * s <= b
+        m0 -= m1 * u;  
 
         auto tmp = s;
         s = t;
@@ -78,122 +33,6 @@ pair<long long, long long> inv_gcd(long long a, long long b) {
     }
     if (m0 < 0) m0 += b / s;
     return {s, m0};
-}
-
-template <int m>
-struct static_modint {
-    using mint = static_modint;
-
-  public:
-    static constexpr int mod() { return m; }
-    static mint raw(int v) {
-        mint x;
-        x._v = v;
-        return x;
-    }
-
-    static_modint() : _v(0) {}
-    template <class T>
-    static_modint(T v) {
-        long long x = (long long)(v % (long long)(umod()));
-        if (x < 0) x += umod();
-        _v = (unsigned int)(x);
-    }
-
-    unsigned int val() const { return _v; }
-
-    mint& operator++() {
-        _v++;
-        if (_v == umod()) _v = 0;
-        return *this;
-    }
-    mint& operator--() {
-        if (_v == 0) _v = umod();
-        _v--;
-        return *this;
-    }
-    mint operator++(signed) {
-        mint result = *this;
-        ++*this;
-        return result;
-    }
-    mint operator--(signed) {
-        mint result = *this;
-        --*this;
-        return result;
-    }
-
-    mint& operator+=(const mint& rhs) {
-        _v += rhs._v;
-        if (_v >= umod()) _v -= umod();
-        return *this;
-    }
-    mint& operator-=(const mint& rhs) {
-        _v -= rhs._v;
-        if (_v >= umod()) _v += umod();
-        return *this;
-    }
-    mint& operator*=(const mint& rhs) {
-        unsigned long long z = _v;
-        z *= rhs._v;
-        _v = (unsigned int)(z % umod());
-        return *this;
-    }
-    mint& operator/=(const mint& rhs) { return *this = *this * rhs.inv(); }
-
-    mint operator+() const { return *this; }
-    mint operator-() const { return mint() - *this; }
-
-    mint pow(long long n) const {
-        assert(0 <= n);
-        mint x = *this, r = 1;
-        while (n) {
-            if (n & 1) r *= x;
-            x *= x;
-            n >>= 1;
-        }
-        return r;
-    }
-    mint inv() const {
-        if (prime) {
-            assert(_v);
-            return pow(umod() - 2);
-        } else {
-            auto eg = inv_gcd(_v, m);
-            assert(eg.first == 1);
-            return eg.second;
-        }
-    }
-
-    friend mint operator+(const mint& lhs, const mint& rhs) {
-        return mint(lhs) += rhs;
-    }
-    friend mint operator-(const mint& lhs, const mint& rhs) {
-        return mint(lhs) -= rhs;
-    }
-    friend mint operator*(const mint& lhs, const mint& rhs) {
-        return mint(lhs) *= rhs;
-    }
-    friend mint operator/(const mint& lhs, const mint& rhs) {
-        return mint(lhs) /= rhs;
-    }
-    friend bool operator==(const mint& lhs, const mint& rhs) {
-        return lhs._v == rhs._v;
-    }
-    friend bool operator!=(const mint& lhs, const mint& rhs) {
-        return lhs._v != rhs._v;
-    }
-
-  private:
-    unsigned int _v;
-    static constexpr unsigned int umod() { return m; }
-    static constexpr bool prime = is_prime<m>;
-};
-
-int ceil_pow2(int n) {
-    int x = 0;
-    while ((1U << x) < n) x++;
-    return x;
 }
 
 long long pow_mod(long long x, long long n, int m) {
@@ -216,48 +55,10 @@ long long inv_mod(long long x, long long m) {
     return z.second;
 }
 
-pair<long long, long long> crt(const vector<long long>& r,
-                                    const vector<long long>& m) {
-    assert(r.size() == m.size());
-    int n = r.size();
-    long long r0 = 0, m0 = 1;
-    for (int i = 0; i < n; i++) {
-        assert(1 <= m[i]);
-        long long r1 = safe_mod(r[i], m[i]), m1 = m[i];
-        if (m0 < m1) {
-            swap(r0, r1);
-            swap(m0, m1);
-        }
-        if (m0 % m1 == 0) {
-            if (r0 % m1 != r1) return {0, 0};
-            continue;
-        }
-
-
-        long long g, im;
-        tie(g, im) = inv_gcd(m0, m1);
-
-        long long u1 = (m1 / g);
-        if ((r1 - r0) % g) return {0, 0};
-
-        long long x = (r1 - r0) / g % u1 * im % u1;
-
-        r0 += x * m0;
-        m0 *= u1;  // -> lcm(m0, m1)
-        if (r0 < 0) r0 += m0;
-    }
-    return {r0, m0};
-}
-
-using modint998244353 = static_modint<998244353>;
-using modint1000000007 = static_modint<1000000007>;
-using mint = modint998244353;
-// using mint = modint1000000007;
+using ll = long long;
 using ld = long double;
 using vi = vector<int>;
 using vvi = vector<vi>;
-using vm = vector<mint>;
-using vvm = vector<vm>;
 using pii = pair<int,int>;
 using vp = vector<pii>;
 using vvp = vector<vp>;
@@ -267,8 +68,6 @@ using ti3 = tuple<int,int,int>;
 using vti3 = vector<ti3>;
 using ti4 = tuple<int,int,int,int>;
 using vti4 = vector<ti4>;
-
-
 
 template<typename T>
 using min_pq = priority_queue<T, vector<T>, greater<T>>;
@@ -330,9 +129,6 @@ template<typename T>
 void po(T x) {
     cout << x << "\n";
 }
-void po(mint x) {
-    cout << x.val() << "\n";
-}
 template<typename T, typename... Args>
 void po(T x, Args... args) {
     cout << x << " ";
@@ -343,12 +139,6 @@ void po(vector<T> &a) {
     int sz = a.size();
     for (int i=0; i<sz; i++) {
         cout << a[i] << ((i==sz-1)?"\n":" ");
-    }
-}
-void po(vector<mint> &a) {
-    int sz = a.size();
-    for (int i=0; i<sz; i++) {
-        cout << a[i].val() << ((i==sz-1)?"\n":" ");
     }
 }
 
@@ -365,7 +155,6 @@ void __print(char x) {cerr << '\'' << x << '\'';}
 void __print(const char *x) {cerr << '\"' << x << '\"';}
 void __print(const string &x) {cerr << '\"' << x << '\"';}
 void __print(bool x) {cerr << (x ? "true" : "false");}
-void __print(mint x) {cerr << x.val();}
 
 template<typename T, typename V>
 void __print(const pair<T, V> &x) {cerr << '{'; __print(x.first); cerr << ','; __print(x.second); cerr << '}';}
@@ -617,30 +406,6 @@ class Trie {
 };
 
 ////////////////////////////////////
- 
-vector<mint> fact;
-vector<mint> finv;
- 
-void init_fact(int fact_sz, int finv_sz) {
-    assert(fact_sz >= finv_sz);
-    fact.resize(fact_sz+1,1);
-    finv.resize(finv_sz+1);
-    for (int i=1; i<=fact_sz; i++) {
-        fact[i] = fact[i-1] * i;
-    }
-    finv[finv_sz] = fact[finv_sz].inv();
-    for (int i=finv_sz; i>0; i--) {
-        finv[i-1] = finv[i] * i;
-    }
-}
- 
-mint ncr(int n, int r) {
-    mint numer = fact[n];
-    mint denom = finv[r] * finv[n-r];
-    return numer * denom;
-}
-
-////////////////////////////////////
 
 vi primes;
 vi spf; 
@@ -833,307 +598,41 @@ template <class T> struct fenwick_tree {
     }
 };
 
-template <class S, S (*op)(S, S), S (*e)()> struct segtree {
-  public:
-    segtree() : segtree(0) {}
-    explicit segtree(int n) : segtree(vector<S>(n, e())) {}
-    explicit segtree(const vector<S>& v) : _n((int)v.size()) {
-        log = ceil_pow2(_n);
-        size = 1 << log;
-        d = vector<S>(2 * size, e());
-        for (int i = 0; i < _n; i++) d[size + i] = v[i];
-        for (int i = size - 1; i >= 1; i--) {
-            update(i);
-        }
+struct segtree {
+    ll n, sz, log=0;
+    vi a;
+
+    segtree(int n) {
+        this->n = n;
+        while ((1 << log) < n) log++;
+        sz = (1 << log);
+        a = vi(2*sz, e());
     }
 
-    void set(int p, S x) {
-        assert(0 <= p && p < _n);
-        p += size;
-        d[p] = x;
-        for (int i = 1; i <= log; i++) update(p >> i);
+    ll e() {return 0;}
+    ll op(ll x, ll y) {return x+y;}
+    void update(int p) {a[p] = op(a[2*p],a[2*p+1]);}
+
+    void set(int p, ll x) {
+        p += sz;
+        a[p] = x;
+        while (p>>=1) update(p);
     }
 
-    S get(int p) const {
-        assert(0 <= p && p < _n);
-        return d[p + size];
-    }
-
-    S prod(int l, int r) const {
-        assert(0 <= l && l <= r && r <= _n);
-        S sml = e(), smr = e();
-        l += size;
-        r += size;
-
+    ll prod(int l, int r) {
+        l += sz, r += sz;
+        ll lp = e(), rp = e();
         while (l < r) {
-            if (l & 1) sml = op(sml, d[l++]);
-            if (r & 1) smr = op(d[--r], smr);
-            l >>= 1;
-            r >>= 1;
+            if (l&1) lp = op(lp, a[l++]);
+            if (r&1) rp = op(rp, a[--r]);
+            l >>= 1; r >>= 1;
         }
-        return op(sml, smr);
+        return op(lp,rp);
     }
 
-    S all_prod() const { return d[1]; }
-
-    template <bool (*f)(S)> int max_right(int l) const {
-        return max_right(l, [](S x) { return f(x); });
-    }
-    template <class F> int max_right(int l, F f) const {
-        assert(0 <= l && l <= _n);
-        assert(f(e()));
-        if (l == _n) return _n;
-        l += size;
-        S sm = e();
-        do {
-            while (l % 2 == 0) l >>= 1;
-            if (!f(op(sm, d[l]))) {
-                while (l < size) {
-                    l = (2 * l);
-                    if (f(op(sm, d[l]))) {
-                        sm = op(sm, d[l]);
-                        l++;
-                    }
-                }
-                return l - size;
-            }
-            sm = op(sm, d[l]);
-            l++;
-        } while ((l & -l) != l);
-        return _n;
-    }
-
-    template <bool (*f)(S)> int min_left(int r) const {
-        return min_left(r, [](S x) { return f(x); });
-    }
-    template <class F> int min_left(int r, F f) const {
-        assert(0 <= r && r <= _n);
-        assert(f(e()));
-        if (r == 0) return 0;
-        r += size;
-        S sm = e();
-        do {
-            r--;
-            while (r > 1 && (r % 2)) r >>= 1;
-            if (!f(op(d[r], sm))) {
-                while (r < size) {
-                    r = (2 * r + 1);
-                    if (f(op(d[r], sm))) {
-                        sm = op(d[r], sm);
-                        r--;
-                    }
-                }
-                return r + 1 - size;
-            }
-            sm = op(d[r], sm);
-        } while ((r & -r) != r);
-        return 0;
-    }
-
-  private:
-    int _n, size, log;
-    vector<S> d;
-
-    void update(int k) { d[k] = op(d[2 * k], d[2 * k + 1]); }
+    ll get(int p) {return a[p+sz];}
 };
 
-template <class S,
-          S (*op)(S, S),
-          S (*e)(),
-          class F,
-          S (*mapping)(F, S),
-          F (*composition)(F, F),
-          F (*id)()>
-struct lazy_segtree {
-  public:
-    lazy_segtree() : lazy_segtree(0) {}
-    explicit lazy_segtree(int n) : lazy_segtree(vector<S>(n, e())) {}
-    explicit lazy_segtree(const vector<S>& v) : _n((int)(v.size())) {
-        log = ceil_pow2(_n);
-        size = 1 << log;
-        d = vector<S>(2 * size, e());
-        lz = vector<F>(size, id());
-        for (int i = 0; i < _n; i++) d[size + i] = v[i];
-        for (int i = size - 1; i >= 1; i--) {
-            update(i);
-        }
-    }
-
-    void set(int p, S x) {
-        assert(0 <= p && p < _n);
-        p += size;
-        for (int i = log; i >= 1; i--) push(p >> i);
-        d[p] = x;
-        for (int i = 1; i <= log; i++) update(p >> i);
-    }
-
-    S get(int p) {
-        assert(0 <= p && p < _n);
-        p += size;
-        for (int i = log; i >= 1; i--) push(p >> i);
-        return d[p];
-    }
-
-    S prod(int l, int r) {
-        assert(0 <= l && l <= r && r <= _n);
-        if (l == r) return e();
-
-        l += size;
-        r += size;
-
-        for (int i = log; i >= 1; i--) {
-            if (((l >> i) << i) != l) push(l >> i);
-            if (((r >> i) << i) != r) push((r - 1) >> i);
-        }
-
-        S sml = e(), smr = e();
-        while (l < r) {
-            if (l & 1) sml = op(sml, d[l++]);
-            if (r & 1) smr = op(d[--r], smr);
-            l >>= 1;
-            r >>= 1;
-        }
-
-        return op(sml, smr);
-    }
-
-    S all_prod() { return d[1]; }
-
-    void apply(int p, F f) {
-        assert(0 <= p && p < _n);
-        p += size;
-        for (int i = log; i >= 1; i--) push(p >> i);
-        d[p] = mapping(f, d[p]);
-        for (int i = 1; i <= log; i++) update(p >> i);
-    }
-    void apply(int l, int r, F f) {
-        assert(0 <= l && l <= r && r <= _n);
-        if (l == r) return;
-
-        l += size;
-        r += size;
-
-        for (int i = log; i >= 1; i--) {
-            if (((l >> i) << i) != l) push(l >> i);
-            if (((r >> i) << i) != r) push((r - 1) >> i);
-        }
-
-        {
-            int l2 = l, r2 = r;
-            while (l < r) {
-                if (l & 1) all_apply(l++, f);
-                if (r & 1) all_apply(--r, f);
-                l >>= 1;
-                r >>= 1;
-            }
-            l = l2;
-            r = r2;
-        }
-
-        for (int i = 1; i <= log; i++) {
-            if (((l >> i) << i) != l) update(l >> i);
-            if (((r >> i) << i) != r) update((r - 1) >> i);
-        }
-    }
-
-    template <bool (*g)(S)> int max_right(int l) {
-        return max_right(l, [](S x) { return g(x); });
-    }
-    template <class G> int max_right(int l, G g) {
-        assert(0 <= l && l <= _n);
-        assert(g(e()));
-        if (l == _n) return _n;
-        l += size;
-        for (int i = log; i >= 1; i--) push(l >> i);
-        S sm = e();
-        do {
-            while (l % 2 == 0) l >>= 1;
-            if (!g(op(sm, d[l]))) {
-                while (l < size) {
-                    push(l);
-                    l = (2 * l);
-                    if (g(op(sm, d[l]))) {
-                        sm = op(sm, d[l]);
-                        l++;
-                    }
-                }
-                return l - size;
-            }
-            sm = op(sm, d[l]);
-            l++;
-        } while ((l & -l) != l);
-        return _n;
-    }
-
-    template <bool (*g)(S)> int min_left(int r) {
-        return min_left(r, [](S x) { return g(x); });
-    }
-    template <class G> int min_left(int r, G g) {
-        assert(0 <= r && r <= _n);
-        assert(g(e()));
-        if (r == 0) return 0;
-        r += size;
-        for (int i = log; i >= 1; i--) push((r - 1) >> i);
-        S sm = e();
-        do {
-            r--;
-            while (r > 1 && (r % 2)) r >>= 1;
-            if (!g(op(d[r], sm))) {
-                while (r < size) {
-                    push(r);
-                    r = (2 * r + 1);
-                    if (g(op(d[r], sm))) {
-                        sm = op(d[r], sm);
-                        r--;
-                    }
-                }
-                return r + 1 - size;
-            }
-            sm = op(d[r], sm);
-        } while ((r & -r) != r);
-        return 0;
-    }
-
-  private:
-    int _n, size, log;
-    vector<S> d;
-    vector<F> lz;
-
-    void update(int k) { d[k] = op(d[2 * k], d[2 * k + 1]); }
-    void all_apply(int k, F f) {
-        d[k] = mapping(f, d[k]);
-        if (k < size) lz[k] = composition(f, lz[k]);
-    }
-    void push(int k) {
-        all_apply(2 * k, lz[k]);
-        all_apply(2 * k + 1, lz[k]);
-        lz[k] = id();
-    }
-};
-
-template <class T> vector<int> z_algorithm(const vector<T>& s) {
-    int n = (int)(s.size());
-    if (n == 0) return {};
-    vector<int> z(n);
-    z[0] = 0;
-    for (int i = 1, j = 0; i < n; i++) {
-        int& k = z[i];
-        k = (j + z[j] <= i) ? 0 : min(j + z[j] - i, z[i - j]);
-        while (i + k < n && s[k] == s[i + k]) k++;
-        if (j + z[j] < i + z[i]) j = i;
-    }
-    z[0] = n;
-    return z;
-}
-
-vector<int> z_algorithm(const string& s) {
-    int n = s.size();
-    vector<int> s2(n);
-    for (int i = 0; i < n; i++) {
-        s2[i] = s[i];
-    }
-    return z_algorithm(s2);
-}
 
 ////////////////////////////////////
 
