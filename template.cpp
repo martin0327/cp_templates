@@ -1731,6 +1731,10 @@ void init_fact(int fact_sz, int finv_sz) {
         finv[i-1] = finv[i] * i;
     }
 }
+
+void init_fact(int sz) {
+    init_fact(sz,sz);
+}
  
 mint ncr(int n, int r) {
     mint numer = fact[n];
