@@ -1737,6 +1737,7 @@ void init_fact(int sz) {
 }
  
 mint ncr(int n, int r) {
+    if (r < 0 || r > n) return mint(0);
     mint numer = fact[n];
     mint denom = finv[r] * finv[n-r];
     return numer * denom;
