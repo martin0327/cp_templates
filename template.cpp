@@ -1714,6 +1714,41 @@ vector<T> get_unique(vector<T> a) {
     return a;
 }
 
+template<typename T>
+vector<vector<T>> mat_id(int n) {
+    vector<vector<T>> ret(n, vector<T>(n));
+    for (int i=0; i<n; i++) {
+        ret[i][i] = 1;
+    }
+    return ret;
+}
+
+template<typename T>
+vector<vector<T>> mat_mul(vector<vector<T>> &a, vector<vector<T>> &b) {
+    int n = a.size();
+    vector<vector<T>> ret(n, vector<T>(n));
+    for (int i=0; i<n; i++) {
+        for (int j=0; j<n; j++) {
+            for (int k=0; k<n; k++) {
+                ret[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+    return ret;
+}
+
+template<typename T>
+vector<vector<T>> mat_exp(vector<vector<T>> a, int e) {
+    int n = a.size();
+    auto ret = mat_id();
+    while (e) {
+        if (e&1) ret = mat_mul(ret, a);
+        e >>= 1;
+        a = mat_mul(a,a);
+    }
+    return ret;
+}
+
 ////////////////////////////////////
  
 vector<mint> fact;
