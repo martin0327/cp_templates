@@ -1740,7 +1740,7 @@ vector<vector<T>> mat_mul(vector<vector<T>> &a, vector<vector<T>> &b) {
 template<typename T>
 vector<vector<T>> mat_exp(vector<vector<T>> a, int e) {
     int n = a.size();
-    auto ret = mat_id();
+    auto ret = mat_id<T>(n);
     while (e) {
         if (e&1) ret = mat_mul(ret, a);
         e >>= 1;
