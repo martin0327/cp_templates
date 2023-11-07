@@ -1522,7 +1522,7 @@ bool mul_overflow(int a, int b) {
 }
 
 template<typename T>
-int popcount(T x) {return __builtin_popcount(x);}
+int popcount(T x) {return __builtin_popcountll(x);}
 
 template<typename T>
 T sum(vector<T> &a) {
