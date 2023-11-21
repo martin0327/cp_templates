@@ -374,12 +374,12 @@ class Trie {
     public:
 
     bool leaf;
-    Trie* children[26];
+    Trie* ch[26];
 
     Trie() {
         this->leaf = false;
         for (int i=0; i<26; i++) {
-            this->children[i] = nullptr;
+            this->ch[i] = nullptr;
         }
     }
 
@@ -388,8 +388,8 @@ class Trie {
 
         for (int i=0; i<(int)s.size(); i++) {
             int idx = s[i] - 'a';
-            if (node->children[idx] == nullptr) node->children[idx] = new Trie();
-            node = node->children[idx];
+            if (node->ch[idx] == nullptr) node->ch[idx] = new Trie();
+            node = node->ch[idx];
         }
         node->leaf = true;
     }
@@ -398,8 +398,8 @@ class Trie {
         Trie* node = this;
         for (int i = 0; i <(int)key.size(); i++) {
             int idx = key[i] - 'a';
-            if (!node->children[idx]) return false;
-            node = node->children[idx];
+            if (!node->ch[idx]) return false;
+            node = node->ch[idx];
         }
         return (node->leaf);
     }

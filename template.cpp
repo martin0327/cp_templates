@@ -1670,22 +1670,28 @@ class Trie {
     public:
 
     bool leaf;
-    Trie* children[26];
+    Trie* ch[26];
 
     Trie() {
         this->leaf = false;
         for (int i=0; i<26; i++) {
-            this->children[i] = nullptr;
+            this->ch[i] = nullptr;
         }
     }
+    
+    ~Trie() {
+		for (int i = 0; i < 26; i++) {
+            if (ch[i]) delete ch[i];
+        }
+	}
 
     void insert(string s) {
         Trie* node = this;
 
         for (int i=0; i<(int)s.size(); i++) {
             int idx = s[i] - 'a';
-            if (node->children[idx] == nullptr) node->children[idx] = new Trie();
-            node = node->children[idx];
+            if (node->ch[idx] == nullptr) node->ch[idx] = new Trie();
+            node = node->ch[idx];
         }
         node->leaf = true;
     }
@@ -1694,8 +1700,8 @@ class Trie {
         Trie* node = this;
         for (int i = 0; i <(int)key.size(); i++) {
             int idx = key[i] - 'a';
-            if (!node->children[idx]) return false;
-            node = node->children[idx];
+            if (!node->ch[idx]) return false;
+            node = node->ch[idx];
         }
         return (node->leaf);
     }
@@ -1970,7 +1976,7 @@ struct LCA {
 // F id () {
 //     return {1,0};
 // }
- 
+
 // lazy_segtree<S, op, e, F, mapping, composition, id> seg(n);
 
 ////////////////////////////////////
