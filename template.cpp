@@ -1680,10 +1680,10 @@ class Trie {
     }
     
     ~Trie() {
-		for (int i = 0; i < 26; i++) {
+        for (int i = 0; i < 26; i++) {
             if (ch[i]) delete ch[i];
         }
-	}
+    }
 
     void insert(string s) {
         Trie* node = this;
