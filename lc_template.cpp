@@ -1541,26 +1541,6 @@ T min(vector<T> &a) {
     return *min_element(a.begin(), a.end());
 }
 
-template<typename T> 
-pair<T,int> max_idx(vector<T> &a) {
-    int n = a.size();
-    vector<pair<T,int>> b(n);
-    for (int i=0; i<n; i++) {
-        b[i] = {a[i], i};
-    }
-    return *max_element(b.begin(), b.end());
-}
-
-template<typename T> 
-pair<T,int> min_idx(vector<T> &a) {
-    int n = a.size();
-    vector<pair<T,int>> b(n);
-    for (int i=0; i<n; i++) {
-        b[i] = {a[i], i};
-    }
-    return *min_element(b.begin(), b.end());
-}
-
 int ceil_div(int a, int b) {
     return (a + b - 1) / b;
 }
@@ -2028,5 +2008,27 @@ signed main() {
     return 0;
 }
 
+using ll = long long;
+using vi = vector<ll>;
+using vvi = vector<vi>;
+using pii = pair<ll,ll>;
+using vp = vector<pii>;
+using ti3 = tuple<ll,ll,ll>;
+using vs = vector<string>;
+
+template<typename T>
+using min_pq = priority_queue<T, vector<T>, greater<T>>;
+template<typename T>
+using max_pq = priority_queue<T>;
+
+class Solution {
+public:
+    int numberOfSubarrays(vector<int>& a, int k) {
+        
+    }
+};
+
 void solve() {
+    auto sol = Solution();
+
 }
