@@ -2014,6 +2014,7 @@ using vvi = vector<vi>;
 using pii = pair<ll,ll>;
 using vp = vector<pii>;
 using ti3 = tuple<ll,ll,ll>;
+using vti3 = vector<ti3>;
 using vs = vector<string>;
 
 template<typename T>
