@@ -1345,10 +1345,10 @@ using vvs = vector<vs>;
 using ti3 = tuple<int,int,int>;
 using vti3 = vector<ti3>;
 
-template<typename T>
-using min_pq = priority_queue<T, vector<T>, greater<T>>;
-template<typename T>
-using max_pq = priority_queue<T>;
+// template<typename T>
+// using min_pq = priority_queue<T, vector<T>, greater<T>>;
+// template<typename T>
+// using max_pq = priority_queue<T>;
 
 struct custom_hash {
     static uint64_t splitmix64(uint64_t x) {
@@ -2009,10 +2009,10 @@ signed main() {
 }
 
 
-// template<typename T>
-// using min_pq = priority_queue<T, vector<T>, greater<T>>;
-// template<typename T>
-// using max_pq = priority_queue<T>;
+template<typename T>
+using min_pq = priority_queue<T, vector<T>, greater<T>>;
+template<typename T>
+using max_pq = priority_queue<T>;
 
 template<typename T>
 void chmax(T &x, T y) {x = max(x,y);}

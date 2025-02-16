@@ -1345,11 +1345,6 @@ using vvs = vector<vs>;
 using ti3 = tuple<int,int,int>;
 using vti3 = vector<ti3>;
 
-template<typename T>
-using min_pq = priority_queue<T, vector<T>, greater<T>>;
-template<typename T>
-using max_pq = priority_queue<T>;
-
 struct custom_hash {
     static uint64_t splitmix64(uint64_t x) {
         x += 0x9e3779b97f4a7c15;
@@ -1589,11 +1584,11 @@ int msb_pos(int x) {
     return ret;
 }
 
-template<typename T>
-void chmax(T &x, T y) {x = max(x,y);}
+template<typename T1, typename T2>
+void chmax(T1 &x, T2 y) { if (x < y) x = y; }
 
-template<typename T>
-void chmin(T &x, T y) {x = min(x,y);}
+template<typename T1, typename T2>
+void chmin(T1 &x, T2 y) { if (x > y) x = y; }
 
 template<typename T>
 void asort(vector<T> &a) {sort(a.begin(), a.end());}
@@ -1603,6 +1598,24 @@ void dsort(vector<T> &a) {sort(a.rbegin(), a.rend());}
 
 template<typename T>
 void reverse(vector<T> &a) {reverse(a.begin(), a.end());}
+
+template<typename T>
+set<T> get_set(vector<T> &a) {
+    set<T> ret(a.begin(), a.end());
+    return ret;
+}
+
+template<typename T>
+vector<T> get_unique(vector<T> a) {
+    asort(a);
+    a.erase(unique(a.begin(), a.end()), a.end());
+    return a;
+}
+
+template<typename T>
+using min_pq = priority_queue<T, vector<T>, greater<T>>;
+template<typename T>
+using max_pq = priority_queue<T>;
 
 int ccw(pii p1, pii p2, pii p3) {
     auto [x1,y1] = p1;
@@ -1726,19 +1739,6 @@ class Trie {
         return (node->leaf);
     }
 };
-
-template<typename T>
-set<T> get_set(vector<T> &a) {
-    set<T> ret(a.begin(), a.end());
-    return ret;
-}
-
-template<typename T>
-vector<T> get_unique(vector<T> a) {
-    asort(a);
-    a.erase(unique(a.begin(), a.end()), a.end());
-    return a;
-}
 
 template<typename T>
 vector<vector<T>> mat_id(int n) {
