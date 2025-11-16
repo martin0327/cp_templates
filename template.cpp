@@ -1322,28 +1322,30 @@ struct two_sat {
 
 using namespace atcoder;
 
-#pragma GCC optimize("O3,unroll-loops")
-#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+// #pragma GCC optimize("O3,unroll-loops")
+// #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 #include <bits/stdc++.h>
 // #define endl "\n"
-#define int long long
+using ll = long long;
+#define int ll
 #define PI 3.14159265359
 
 using namespace std;
 using mint = modint;
 
 using ld = long double;
-using vi = vector<int>;
+using vi = vector<ll>;
 using vvi = vector<vi>;
 using vm = vector<mint>;
 using vvm = vector<vm>;
-using pii = pair<int,int>;
+using pii = pair<ll,ll>;
 using vp = vector<pii>;
 using vvp = vector<vp>;
 using vs = vector<string>;
 using vvs = vector<vs>;
-using ti3 = tuple<int,int,int>;
+using ti3 = tuple<ll,ll,ll>;
 using vti3 = vector<ti3>;
+using i128 = __int128;
 
 struct custom_hash {
     static uint64_t splitmix64(uint64_t x) {
@@ -1607,7 +1609,7 @@ set<T> get_set(vector<T> &a) {
 
 template<typename T>
 vector<T> get_unique(vector<T> a) {
-    asort(a);
+    sort(a.begin(), a.end());
     a.erase(unique(a.begin(), a.end()), a.end());
     return a;
 }
@@ -1836,28 +1838,59 @@ vi get_pfactors(int x) {
 ////////////////////////////////////
 
 struct rabin_karp {
-    int n,p,m;
-    vi p_pow,p_inv,h;
 
-    rabin_karp(string s, int p, int m) {
-        this->n = s.size();
-        this->p = p;
-        this->m = m;
-        p_pow = p_inv = vi(n+1,1);
-        for (int i=1; i<=n; i++) p_pow[i] = (p_pow[i-1]*p)%m;
-        p_inv[n] = pow_mod(p_pow[n],m-2,m);
-        for (int i=n-1; i>0; i--) p_inv[i] = (p_inv[i+1]*p)%m;
-        h = vi(n+1);
-        for (int i=0; i<n; i++) {
-            int x = ('a'<=s[i] && s[i]<='z') ? (s[i]-'a'+1) : (s[i]-'A'+27);
-            h[i+1] = (h[i]+(x*p_pow[i]))%m;
+    static i128 pm(i128 x, i128 n, i128 m) {
+        assert(0 <= n && 1 <= m);
+        if (m == 1) return 0;
+        
+        i128 r = 1, y = ((x%m)+m)%m;
+        while (n) {
+            if (n & 1) r = (r*y) % m;
+            y = (y*y)%m;
+            n >>= 1;
         }
+        return r;
     }
 
-    int query(int l, int r) {
+    size_t n;
+    i128 p,m;
+    vector<i128> ppow,pinv,h;
+
+    rabin_karp(const vi &a, i128 m = (1ll<<61) - 1) {
+        this->n = a.size();
+        this->m = m;
+
+        std::mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
+        std::uniform_int_distribution<long long> dist(1000, (long long)(sqrt((long double)m)));
+        p = dist(rng);
+
+        ppow = pinv = vector<i128>(n+1,1);
+        h = vector<i128> (n+1);
+
+        for (int i=1; i<=n; i++) 
+            ppow[i] = (ppow[i-1]*p)%m;
+        pinv[n] = pm(ppow[n],m-2,m);
+        for (int i=n-1; i>0; i--) 
+            pinv[i] = (pinv[i+1]*p)%m;
+        for (int i=0; i<n; i++) 
+            h[i+1] = (h[i]+(a[i]*ppow[i]))%m;
+    }
+
+    rabin_karp(string s, i128 m) : rabin_karp([&]{
+        vi a(s.size());
+        for (int i=0; i<s.size(); i++) {
+            char c = s[i];
+            int x = ('a'<=c && c<='z') ? (c-'a'+1) : (c-'A'+27);
+            assert(1 <= x && x <= 52);
+            a[i] = x;
+        }
+        return a;
+    }(), m) {}
+
+    i128 query(int l, int r) const {
         assert(0<=l && l<=r && r<n);
-        int x = ((h[r+1]-h[l])%m+m)%m;
-        return (x*p_inv[l]) % m;
+        i128 x = ((h[r+1]-h[l])%m+m)%m;
+        return (x*pinv[l]) % m;
     }
 };
 
