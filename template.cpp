@@ -1347,6 +1347,28 @@ using ti3 = tuple<ll,ll,ll>;
 using vti3 = vector<ti3>;
 using i128 = __int128;
 
+std::string to_string_i128(i128 x) {
+    if (x == 0) return "0";
+    bool neg = false;
+    if (x < 0) {
+        neg = true;
+        x = -x;
+    }
+    std::string s;
+    while (x > 0) {
+        int digit = x % 10;
+        s.push_back('0' + digit);
+        x /= 10;
+    }
+    if (neg) s.push_back('-');
+    std::reverse(s.begin(), s.end());
+    return s;
+}
+
+std::ostream& operator<<(std::ostream& os, i128 x) {
+    return os << to_string_i128(x);
+}
+
 struct custom_hash {
     static uint64_t splitmix64(uint64_t x) {
         x += 0x9e3779b97f4a7c15;
@@ -1460,6 +1482,7 @@ void __print(char x) {cerr << '\'' << x << '\'';}
 void __print(const char *x) {cerr << '\"' << x << '\"';}
 void __print(const string &x) {cerr << '\"' << x << '\"';}
 void __print(bool x) {cerr << (x ? "true" : "false");}
+void __print(i128 x) {cerr << x;}
 void __print(mint x) {cerr << x.val();}
 
 template<typename T, typename V>
@@ -1876,12 +1899,11 @@ struct rabin_karp {
             h[i+1] = (h[i]+(a[i]*ppow[i]))%m;
     }
 
-    rabin_karp(string s, i128 m) : rabin_karp([&]{
+    rabin_karp(string s, i128 m = (1ll<<61) - 1) : rabin_karp([&]{
         vi a(s.size());
         for (int i=0; i<s.size(); i++) {
             char c = s[i];
-            int x = ('a'<=c && c<='z') ? (c-'a'+1) : (c-'A'+27);
-            assert(1 <= x && x <= 52);
+            int x = static_cast<unsigned char>(s[i]);
             a[i] = x;
         }
         return a;
