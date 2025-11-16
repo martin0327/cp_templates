@@ -1861,60 +1861,75 @@ vi get_pfactors(int x) {
 ////////////////////////////////////
 
 struct rabin_karp {
-
-    static i128 pm(i128 x, i128 n, i128 m) {
-        assert(0 <= n && 1 <= m);
-        if (m == 1) return 0;
-        
-        i128 r = 1, y = ((x%m)+m)%m;
-        while (n) {
-            if (n & 1) r = (r*y) % m;
-            y = (y*y)%m;
-            n >>= 1;
-        }
-        return r;
-    }
-
     size_t n;
-    i128 p,m;
-    vector<i128> ppow,pinv,h;
+    i128 B, P;                          // base and modulus for this instance
+    inline static const i128 defaultP = (1ll << 61) - 1;
 
-    rabin_karp(const vi &a, i128 m = (1ll<<61) - 1) {
-        this->n = a.size();
-        this->m = m;
+    static std::mt19937_64 rng;         // shared RNG for all instances
 
-        std::mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
-        std::uniform_int_distribution<long long> dist(1000, (long long)(sqrt((long double)m)));
-        p = dist(rng);
+    std::vector<i128> pw;               // pw[i] = B^i mod P
+    std::vector<i128> h;                // prefix hashes
 
-        ppow = pinv = vector<i128>(n+1,1);
-        h = vector<i128> (n+1);
-
-        for (int i=1; i<=n; i++) 
-            ppow[i] = (ppow[i-1]*p)%m;
-        pinv[n] = pm(ppow[n],m-2,m);
-        for (int i=n-1; i>0; i--) 
-            pinv[i] = (pinv[i+1]*p)%m;
-        for (int i=0; i<n; i++) 
-            h[i+1] = (h[i]+(a[i]*ppow[i]))%m;
+    // --- helper: get a random base in [1000, sqrt(P)] ---
+    static i128 random_base(i128 P) {
+        std::uniform_int_distribution<long long> dist(
+            1000,
+            (long long)std::sqrt((long double)P)
+        );
+        return dist(rng);
     }
 
-    rabin_karp(string s, i128 m = (1ll<<61) - 1) : rabin_karp([&]{
-        vi a(s.size());
-        for (int i=0; i<s.size(); i++) {
-            char c = s[i];
-            int x = static_cast<unsigned char>(s[i]);
-            a[i] = x;
+    // --- core constructor: explicit base + modulus ---
+    rabin_karp(const std::vector<int> &a, i128 B, i128 P = defaultP)
+        : n(a.size()), B(B), P(P), pw(n + 1, 1), h(n + 1, 0) {
+
+        // pw[i] = B^i mod P
+        for (int i = 1; i <= (int)n; i++) {
+            pw[i] = (pw[i - 1] * B) % P;
         }
-        return a;
-    }(), m) {}
 
-    i128 query(int l, int r) const {
-        assert(0<=l && l<=r && r<n);
-        i128 x = ((h[r+1]-h[l])%m+m)%m;
-        return (x*pinv[l]) % m;
+        // backward-style prefix hash:
+        // h[i+1] = h[i]*B + a[i]   (mod P)
+        for (int i = 0; i < (int)n; i++) {
+            h[i+1] = ((h[i] * B )%P + a[i]) % P;
+        }
     }
+
+    // --- convenience constructor: random base, given modulus (or defaultP) ---
+    rabin_karp(const std::vector<int> &a, i128 P = defaultP)
+        : rabin_karp(a, random_base(P), P) {}
+
+    // --- string constructor: builds vector<int> from bytes ---
+    rabin_karp(const std::string &s, i128 P = defaultP)
+        : rabin_karp([&]{
+              std::vector<int> a(s.size());
+              for (int i = 0; i < (int)s.size(); i++) {
+                  a[i] = (unsigned char)s[i];
+              }
+              return a;
+          }(), random_base(P), P) {}   // <-- note: 3 arguments here
+
+    // hash of substring [l, r] (0-indexed, inclusive)
+    i128 query(int l, int r) const {
+        assert(0 <= l && l <= r && (size_t)r < n);
+        int len = r - l + 1;
+
+        // x = h[r+1] - h[l] * B^len
+        i128 x = h[r + 1] - ( (__int128)h[l] * pw[len] ) % P;
+        x %= P;
+        if (x < 0) x += P;
+        return x;
+    }
+
+    // optional helpers if you want to inspect parameters
+    i128 base() const { return B; }
+    i128 mod()  const { return P; }
 };
+
+// static RNG definition
+std::mt19937_64 rabin_karp::rng(
+    std::chrono::steady_clock::now().time_since_epoch().count()
+);
 
 ////////////////////////////////////
 
