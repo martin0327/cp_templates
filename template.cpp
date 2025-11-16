@@ -1393,6 +1393,39 @@ struct custom_hash {
     }
 };
 
+struct range {
+    struct iterator {
+        int value;
+        int step;
+        int stop;
+
+        int operator*() const { return value; }
+
+        iterator& operator++() {
+            value += step;
+            return *this;
+        }
+
+        bool operator!=(const iterator& other) const {
+            (void)other; // end iterator unused
+            return step > 0 ? value < stop : value > stop;
+        }
+    };
+
+    int start, stop, step;
+
+    range(int stop) : start(0), stop(stop), step(1) {}
+
+    range(int start, int stop) : start(start), stop(stop), step(1) {}
+
+    range(int start, int stop, int step) : start(start), stop(stop), step(step) {
+        assert(step != 0 && "range() step must not be zero");
+    }
+
+    iterator begin() const { return {start, step, stop}; }
+    iterator end()   const { return {stop,  step, stop}; }
+};
+
 template<int D, typename T>
 struct Vec : public vector<Vec<D - 1, T>> {
   static_assert(D >= 1, "Vector dimension must be greater than zero!");
