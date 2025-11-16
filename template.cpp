@@ -1,3 +1,7 @@
+#ifdef LOCAL
+#include "pch.hpp"
+#else // 2000 lines template starts here
+
 #include<bits/stdc++.h>
 #include <type_traits>
 
@@ -2104,9 +2108,11 @@ struct LCA {
 
 ////////////////////////////////////
 
+#endif // 2000 lines template ends here
+
 void io_util() {
     #ifdef LOCAL
-    freopen("input.txt", "r", stdin);
+    // freopen("input.txt", "r", stdin);
     // freopen("output.txt", "w", stdout);
     #endif
     cin.tie(0)->sync_with_stdio(0);
