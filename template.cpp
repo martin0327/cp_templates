@@ -2130,6 +2130,7 @@ signed main() {
     // mint::set_mod(1e9+7);
     int tc = 1;
     // ri(tc);
+    // cin.ignore(numeric_limits<streamsize>::max(), '\n'); // flush the newline
     for (int i=1; i<=tc; i++) {
         // cout << "Case #" << i << ": ";
         solve();
