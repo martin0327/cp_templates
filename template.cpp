@@ -1351,6 +1351,31 @@ using ti3 = tuple<ll,ll,ll>;
 using vti3 = vector<ti3>;
 using i128 = __int128;
 
+i128 parse_i128(const std::string &s) {
+    if (s == "0") return 0;
+    bool neg = false;
+    int i = 0;
+
+    if (s[0] == '-') {
+        neg = true;
+        i = 1;
+    }
+
+    i128 x = 0;
+    for (; i < (int)s.size(); i++) {
+        x = x * 10 + (s[i] - '0');
+    }
+
+    return neg ? -x : x;
+}
+
+std::istream& operator>>(std::istream& is, i128 &x) {
+    std::string s;
+    is >> s;
+    x = parse_i128(s);
+    return is;
+}
+
 std::string to_string_i128(i128 x) {
     if (x == 0) return "0";
     bool neg = false;
@@ -2137,6 +2162,7 @@ signed main() {
     // mint::set_mod(1e9+7);
     int tc = 1;
     // ri(tc);
+    // cin.ignore(numeric_limits<streamsize>::max(), '\n'); // flush the newline
     for (int i=1; i<=tc; i++) {
         // cout << "Case #" << i << ": ";
         solve();
